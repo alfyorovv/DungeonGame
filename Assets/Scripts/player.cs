@@ -5,12 +5,14 @@ using UnityEngine;
 public class player : MonoBehaviour
 {
     private BoxCollider2D boxCollider;
+    private PolygonCollider2D polygonCollider;
     private Vector3 moveDelta;
     private RaycastHit2D hit;
 
     void Start()
     {
         boxCollider = GetComponent<BoxCollider2D>();
+        polygonCollider = GetComponent<PolygonCollider2D>();
 
     }
     private void FixedUpdate()
