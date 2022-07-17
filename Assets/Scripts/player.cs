@@ -2,45 +2,73 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class player : MonoBehaviour
+
+public class Player : Mover
 {
-    private BoxCollider2D boxCollider;
-    private PolygonCollider2D polygonCollider;
-    private Vector3 moveDelta;
-    private RaycastHit2D hit;
+    private SpriteRenderer spriteRenderer;
 
-    void Start()
+    protected override void Start()
     {
-        boxCollider = GetComponent<BoxCollider2D>();
-        polygonCollider = GetComponent<PolygonCollider2D>();
+        base.Start();
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        
+        
+    }
+    private bool isAlive = true;
 
+    protected override void ReceiveDamage(Damage dmg)
+    {
+        if (!isAlive)
+            return;
+
+        base.ReceiveDamage(dmg);
+        GameManager.instance.OnHitpointChange();
+    }
+    protected override void Death()
+    {
+        isAlive = false;
+        GameManager.instance.deathMenuAnim.SetTrigger("Show");
     }
     private void FixedUpdate()
     {
-
         float x = Input.GetAxisRaw("Horizontal");
         float y = Input.GetAxisRaw("Vertical");
-
-        moveDelta = new Vector3(x, y, 0);
-
-        if (moveDelta.x > 0)
-            transform.localScale = Vector3.one;
-        else if (moveDelta.x < 0)
-            transform.localScale = new Vector3(-1, 1, 1);
-        hit = Physics2D.BoxCast(transform.position, boxCollider.size, 0, new Vector2(0, moveDelta.y), Mathf.Abs(moveDelta.y * Time.deltaTime), LayerMask.GetMask("Actor", "Blocking"));
-
-        if (hit.collider == null)
-        {
-            transform.Translate(0, moveDelta.y * Time.deltaTime, 0);
-        }
-        hit = Physics2D.BoxCast(transform.position, boxCollider.size, 0, new Vector2(moveDelta.x, 0), Mathf.Abs(moveDelta.x * Time.deltaTime), LayerMask.GetMask("Actor", "Blocking"));
-
-        if (hit.collider == null)
-        {
-            transform.Translate(moveDelta.x * Time.deltaTime, 0, 0);
-        }
-
+        if(isAlive)
+           UpdateMotor(new Vector3(x, y, 0));
     }
-    
+    public void SwapSprite(int skinId)
+    {
+        GetComponent<SpriteRenderer>().sprite = GameManager.instance.playerSprites[skinId];
+    }
+    public void OnLevelUp()
+    {
+        maxHitpoint++;
+        hitpoint = maxHitpoint;
+    }
+    public void SetLevel(int level)
+    {
+        for (int i = 0; i < level; i++)
+        {
+            OnLevelUp();
+        }
+    }
+    public void Heal(int healingAmount)
+    {
+        if (hitpoint == maxHitpoint)
+            return;
+
+        hitpoint += healingAmount;
+        if (hitpoint > maxHitpoint)
+            hitpoint = maxHitpoint;
+        GameManager.instance.ShowText("+" + healingAmount.ToString() + "hp", 25, Color.green, transform.position, Vector3.up * 30, 1.0f);
+        GameManager.instance.OnHitpointChange();
+    }
+    public void Respawn()
+    {
+        Heal(maxHitpoint);
+        isAlive = true;
+        lastImmune = Time.time;
+        pushDirection = Vector3.zero;
+    }
     
 }
