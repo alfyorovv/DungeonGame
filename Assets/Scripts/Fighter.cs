@@ -5,6 +5,8 @@ using UnityEngine;
 public class Fighter : MonoBehaviour
 {
     // Public fields
+    public GameObject chest;
+    public GameObject enemy;
     public int hitpoint = 10;
     public int maxHitpoint = 10;
     public float pushRecoverySpeed = 0.2f;
@@ -30,7 +32,10 @@ public class Fighter : MonoBehaviour
             if(hitpoint <= 0)
             {
                 hitpoint = 0;
+                int rand = Random.Range(0, 100);
                 Death();
+                if (rand >= 0 && rand < 33) Instantiate(chest, transform.position, Quaternion.identity);
+                else if(rand>=33 && rand<67) Instantiate(enemy, transform.position, Quaternion.identity);
             }
         }
     }
