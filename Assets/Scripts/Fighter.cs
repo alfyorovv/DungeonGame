@@ -7,6 +7,8 @@ public class Fighter : MonoBehaviour
     // Public fields
     public GameObject chest;
     public GameObject enemy;
+    public GameObject small_enemy;
+
     public int hitpoint = 10;
     public int maxHitpoint = 10;
     public float pushRecoverySpeed = 0.2f;
