@@ -9,7 +9,7 @@ public class Fighter : MonoBehaviour
     public GameObject enemy;
     public GameObject small_enemy;
 
-    public int hitpoint = 10;
+    public int hitpoint = 9;
     public int maxHitpoint = 10;
     public float pushRecoverySpeed = 0.2f;
 
